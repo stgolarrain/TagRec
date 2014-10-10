@@ -84,6 +84,10 @@ public class Bookmark implements Comparable<Bookmark> {
 		return description;
 	}
 	
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
 	public void setUserID(int userID) {
 		this.userID = userID;
 	}

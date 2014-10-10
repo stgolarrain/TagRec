@@ -23,10 +23,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import com.google.common.primitives.Ints;
 
 import file.PredictionFileWriter;
 import file.BookmarkReader;
+import file.stemming.englishStemmer;
 import common.Bookmark;
 
 public class ContentBasedCalculator {
@@ -58,10 +60,28 @@ public class ContentBasedCalculator {
 	 * Matrix factorization: SVD / LSA
 	 * Implement prediction (testing)
 	 * */
+	public void preProcessTrainSet() {
+		englishStemmer stemmer = new englishStemmer();
+		for (Bookmark b : trainList) {
+			// Steam bookmark description
+			stemmer.setCurrent(b.getDescription());
+			stemmer.stem();
+			b.setDescription(stemmer.getCurrent());
+			
+			// Steam bookmark title
+			stemmer.setCurrent(b.getTitle());
+			stemmer.stem();
+			b.setTitle(stemmer.getCurrent());
+		}
+	}
+	
 	public void train() {
 		System.out.println("====== TRAIN =========");
+		preProcessTrainSet();
 		for (Bookmark b : trainList) {
 			System.out.println(b.getDescription());
+			System.out.println(b.getTitle());
+			break;
 		}
 	}
 	
