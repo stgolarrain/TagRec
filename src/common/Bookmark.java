@@ -28,22 +28,24 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-// TODO -----------------------------------------------------
-// extend with fields and methods for title and description
 public class Bookmark implements Comparable<Bookmark> {
 
 	private int userID;
 	private int resID;
 	private String timestamp;
+	private String title;
+	private String description;
 	private List<Integer> tags;
 	
-	private double rating;
+	private double rating; 
 	private List<Integer> categories;
 	
-	public Bookmark(int userID, int wikiID, String timestamp) {
+	public Bookmark(int userID, int wikiID, String timestamp, String title, String description) {
 		this.userID = userID;
 		this.resID = wikiID;
 		this.timestamp = timestamp;
+		this.title = title;
+		this.description = description;
 		
 		this.rating = -2.0;
 		this.categories = new ArrayList<Integer>();
@@ -70,6 +72,17 @@ public class Bookmark implements Comparable<Bookmark> {
 	}
 	
 	// Getter -------------------------------------------------------------------------
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getDescription() {
+		return description;
+	}
 	
 	public void setUserID(int userID) {
 		this.userID = userID;

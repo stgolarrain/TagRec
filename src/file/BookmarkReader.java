@@ -79,7 +79,7 @@ public class BookmarkReader {
 			BufferedReader br = new BufferedReader(reader);
 			List<String> categories = new ArrayList<String>(), tags = new ArrayList<String>();
 			Bookmark userData = null;
-			String userID = "", wikiID = "", timestamp = "";
+			String userID = "", wikiID = "", timestamp = "", title = "", description = "";
 			String[] lineParts = null;
 			String line;
 			
@@ -94,7 +94,9 @@ public class BookmarkReader {
 				userID = lineParts[0].replace("\"", "");
 				wikiID = lineParts[1].replace("\"", "");
 				timestamp = lineParts[2].replace("\"", "");
-				userData = new Bookmark(-1, -1, timestamp);
+				title = lineParts[6].replace("\"", "");
+				description = lineParts[7].replace("\"", "");
+				userData = new Bookmark(-1, -1, timestamp, title, description);
 				categories.clear();
 				tags.clear();
 				for (String tag : lineParts[3].replace("\"", "").split(",")) {

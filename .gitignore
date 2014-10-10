@@ -1,0 +1,4 @@
+/bin
+
+data/metrics/*
+data/results/*
