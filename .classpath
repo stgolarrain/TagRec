@@ -8,8 +8,7 @@
 	<classpathentry kind="lib" path="lib/mallet-deps.jar"/>
 	<classpathentry kind="lib" path="lib/mallet.jar"/>
 	<classpathentry kind="lib" path="lib/javaml-0.1.5.jar"/>
-	<classpathentry kind="lib" path="/Users/slarrain/Downloads/lucene-4.10.1 2/analysis/common/lucene-analyzers-common-4.10.1.jar"/>
-	<classpathentry kind="lib" path="/Users/slarrain/Downloads/lucene-4.10.1 2/core/lucene-core-4.10.1.jar"/>
-	<classpathentry kind="lib" path="/Users/slarrain/Downloads/lucene-4.10.1 2/core"/>
+	<classpathentry kind="lib" path="lib/lucene-analyzers-common-4.10.1.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-core-4.10.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
