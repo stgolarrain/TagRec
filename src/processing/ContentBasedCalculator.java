@@ -38,8 +38,6 @@ public class ContentBasedCalculator {
 	
 	public ContentBasedCalculator(BookmarkReader reader, int trainSize) {
 		this.reader = reader;
-		
-		// TODO: use this data for recommendations
 		this.trainList = this.reader.getBookmarks().subList(0, trainSize);
 	}	
 	
@@ -52,6 +50,19 @@ public class ContentBasedCalculator {
 		// TODO: in order to improve your content-based recommender, you can merge your results with other approaches like the ones from the LanguageModelCalculator or ActCalculator
 		
 		return resultMap;
+	}
+	
+	//TODO: implement
+	/* Pre-procesing: steam and lematization
+	 * Features: TF-IDF
+	 * Matrix factorization: SVD / LSA
+	 * Implement prediction (testing)
+	 * */
+	public void train() {
+		System.out.println("====== TRAIN =========");
+		for (Bookmark b : trainList) {
+			System.out.println(b.getDescription());
+		}
 	}
 	
 	// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
