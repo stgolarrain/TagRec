@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import common.Bookmark;
 import common.CalculationType;
 import common.Features;
 import processing.ActCalculator;
