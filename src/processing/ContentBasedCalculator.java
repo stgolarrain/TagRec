@@ -19,10 +19,21 @@
  */
 package processing;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.lucene.*;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.core.StopAnalyzer;
+import org.apache.lucene.analysis.core.StopFilter;
+import org.apache.lucene.analysis.standard.*;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.util.*;
 
 import com.google.common.primitives.Ints;
 
@@ -60,9 +71,30 @@ public class ContentBasedCalculator {
 	 * Matrix factorization: SVD / LSA
 	 * Implement prediction (testing)
 	 * */
+	
+	/* Implements pre-processing task by applying stop-words, lower case transform
+	 * and stemming.
+	 * */
 	public void preProcessTrainSet() {
 		englishStemmer stemmer = new englishStemmer();
 		for (Bookmark b : trainList) {
+			// Apply lucene stop-words
+			StringBuffer newDescription = new StringBuffer();
+			Tokenizer tokenizer = new StandardTokenizer(new StringReader(b.getTitle() + " " + b.getDescription()));
+			StopFilter stopFilter = new StopFilter(tokenizer, StopAnalyzer.ENGLISH_STOP_WORDS_SET);
+			CharTermAttribute charTermAttribute = tokenizer.addAttribute(CharTermAttribute.class);
+			try {
+				stopFilter.reset();
+				while (stopFilter.incrementToken()) {
+					newDescription.append(charTermAttribute.toString().toString() + " ");
+				}
+				b.setDescription(newDescription.toString().toLowerCase());
+				stopFilter.end();
+				stopFilter.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 			// Steam bookmark description
 			stemmer.setCurrent(b.getDescription());
 			stemmer.stem();
@@ -73,6 +105,13 @@ public class ContentBasedCalculator {
 			stemmer.stem();
 			b.setTitle(stemmer.getCurrent());
 		}
+	}
+	
+	/* For each bookmark on training set, the method perform a tokenization for the 
+	 * text and description (concatenated) and a TF-IDF feature transformation. 
+	 */
+	public void tfIdfTransformationTrainSet() {
+		
 	}
 	
 	public void train() {
