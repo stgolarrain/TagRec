@@ -226,7 +226,7 @@ public class Pipeline {
 		reader.readFile(sampleName);
 		ContentBasedCalculator contentBasedCalculator = new ContentBasedCalculator(reader, TRAIN_SIZE);
 		contentBasedCalculator.train();
-		ContentBasedCalculator.predictSample(sampleName, TRAIN_SIZE, TEST_SIZE);
+		contentBasedCalculator.predictSample(sampleName, TRAIN_SIZE, TEST_SIZE);
 		writeMetrics(sampleDir, sampleName, "cb", 1, 10, null);
 	}
 	

@@ -10,5 +10,10 @@
 	<classpathentry kind="lib" path="lib/javaml-0.1.5.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-analyzers-common-4.10.1.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-core-4.10.1.jar"/>
+	<classpathentry kind="lib" path="lib/Jama-1.0.3.jar"/>
+	<classpathentry kind="lib" path="lib/wvtool.jar"/>
+	<classpathentry kind="lib" path="lib/tml-3.2-core.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
