@@ -273,6 +273,17 @@ public class BookmarkReader {
 		return this.hasTimestamp;
 	}
 	
+	public String getTagName(int id) {
+		return tags.get(id); 
+	}
+	
+	public int getTagId(String tag) {
+		if (tagMap.containsKey(tag))
+			return tagMap.get(tag);
+		else
+			return -1;
+	}
+	
 	public List<Integer> getUniqueUserListFromTestSet(int trainSize) {
 		Set<Integer> userList = new HashSet<Integer>();	
 		if (trainSize == -1) {

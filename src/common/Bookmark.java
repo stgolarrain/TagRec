@@ -20,6 +20,7 @@
 
 package common;
 
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -82,6 +83,10 @@ public class Bookmark implements Comparable<Bookmark> {
 
 	public String getDescription() {
 		return description;
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 	public void setUserID(int userID) {
