@@ -2,3 +2,4 @@
 
 data/metrics/*
 data/results/*
+*.DS_Store
