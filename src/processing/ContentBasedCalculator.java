@@ -19,9 +19,11 @@
  */
 package processing;
 
+import java.awt.RenderingHints.Key;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,8 +61,12 @@ public class ContentBasedCalculator {
 	private Alphabet alphabet;
 	private List<Map<Integer,Integer>> userMap;
 	private List<Map<Integer,Integer>> resMap;
+	private Map<String, Integer> documentFreq;
+	private int nDocs;
+	private double minTfIdf;
 	
-	public ContentBasedCalculator(BookmarkReader reader, int trainSize) {
+	public ContentBasedCalculator(BookmarkReader reader, int trainSize, int nTopics, double minTfIdf) {
+		System.out.println(nTopics);
 		this.reader = reader;
 		this.trainList = this.reader.getBookmarks().subList(0, trainSize);
 		userMap = Utilities.getUserMaps(trainList);
@@ -74,9 +80,27 @@ public class ContentBasedCalculator {
         pipeList.add( new TokenSequence2FeatureSequence());
         serialPipes = new SerialPipes(pipeList);
         
-        model = new ParallelTopicModel(526);
+        this.minTfIdf = minTfIdf;
+        
+        model = new ParallelTopicModel(nTopics);
         model.setNumThreads(5);
-        model.setNumIterations(1000);
+        model.setNumIterations(526);
+        
+        documentFreq = new HashMap<String, Integer>();
+        nDocs = reader.getBookmarks().size();
+        for (Bookmark book : reader.getBookmarks()) {
+        	StringBuffer tags = new StringBuffer();
+        	for (Integer tagId : book.getTags())
+        		tags.append(reader.getTagName(tagId) + " ");
+        	String[] words = (book.getTitle() + " " + book.getDescription() + tags.toString()).split(" ");
+        	Map<String, Boolean> auxHash = new HashMap<String, Boolean>();
+        	for (String word : words) {
+        		if (!auxHash.containsKey(word)) {
+        			documentFreq.put(word, documentFreq.containsKey(word) ? documentFreq.get(word)+1 : 1);
+        			auxHash.put(word, true);
+        		}
+        	}
+        }
 	}
 	
 	// TODO: calculate your recommendations here and return the top-10 (=REC_LIMIT) tags with probability value
@@ -90,32 +114,26 @@ public class ContentBasedCalculator {
         Instance input = serialPipes.instanceFrom(instance);
         double[] data = model.getInferencer().getSampledDistribution(input, 10, 1, 5);
         for (int i=0; i<data.length; i++) {
-        	double norm = 0;
-        	for (IDSorter wordId : tree.get(i)) {
-        		int tagId = reader.getTagId(alphabet.lookupObject(wordId.getID()).toString());
-        		if (tagId > -1) {
-        			if (filterByUserAndResource(userID, resID, tagId))
-            			norm += wordId.getWeight()*100;
-        			else 
-        				norm += wordId.getWeight();
-        		}
-        	}
         	for (IDSorter wordId : tree.get(i)) {
         		int tagId = reader.getTagId(alphabet.lookupObject(wordId.getID()).toString());
         		double score;
         		if (tagId>-1) {
-        			if (filterByUserAndResource(userID, resID, tagId)) {
-        				score = data[i]*wordId.getWeight()*100/norm;
-        			} else
-        				score = data[i]*wordId.getWeight()/norm;
+        			score = data[i]*wordId.getWeight()*tfidf(book, alphabet.lookupObject(wordId.getID()).toString());///norm;
         			resultMap.put(tagId, resultMap.containsKey(tagId) ? score+resultMap.get(tagId) : score);
         		}		
         	}
         }
+        double norm = 0;
+        for (Map.Entry<Integer, Double> entry : resultMap.entrySet())
+        	norm += entry.getValue();
+        for (Map.Entry<Integer, Double> entry : resultMap.entrySet())
+        	resultMap.put(entry.getKey(), entry.getValue()/norm);
         
         Map<Integer, Double> sortedResults = new TreeMap<Integer, Double>(new ValueComparator(resultMap));
         sortedResults.putAll(resultMap);
-        System.out.println("\n Predictions");
+        System.out.println("\nTitle\n" + book.getTitle());
+        System.out.println("Description\n" + book.getDescription());
+        System.out.println("Predictions");
         int i=0;
         for (Map.Entry<Integer,Double> entry : sortedResults.entrySet()) {
         	System.out.print(" [(" + entry.getKey() + ") " + alphabet.lookupObject(entry.getKey()).toString() + " : " + entry.getValue() + "] ");
@@ -130,14 +148,6 @@ public class ContentBasedCalculator {
         System.out.print("\n");
         	
 		return sortedResults;
-	}
-	
-	private boolean filterByUserAndResource(int userId, int resId, int tagId) {
-		if (resMap.size()<=resId || !resMap.get(resId).containsKey(tagId) || resMap.get(resId).get(tagId) == 0)
-			return false;
-		/*if (!userMap.get(userId).containsKey(tagId) || userMap.get(userId).get(tagId) == 0)
-			return false;*/
-		return true;
 	}
 
 	public void train() {
@@ -157,6 +167,29 @@ public class ContentBasedCalculator {
         	e.printStackTrace();
         }
         alphabet = instanceList.getAlphabet();
+	}
+	
+	private double tfidf(Bookmark book, String word) {
+		Map<String, Double> tf = new HashMap<String, Double>();
+		
+		StringBuffer tags = new StringBuffer();
+    	for (Integer tagId : book.getTags())
+    		tags.append(reader.getTagName(tagId) + " ");
+    	String text = book.getTitle() + " " + book.getDescription() + tags.toString();
+    	
+		for (String w : text.split(" ")) {
+			tf.put(w, tf.containsKey(w) ? tf.get(w)+1 : 1.0);
+		}
+		double maxTF = 0.0;
+		for (Double value : tf.values())
+			if (value > maxTF)
+				maxTF = value;
+		for (Map.Entry<String,Double> entry : tf.entrySet()) {
+			double idf = nDocs / (documentFreq.containsKey(word) ? documentFreq.get(word)+1 : 1);
+			tf.put(entry.getKey(), entry.getValue()/maxTF * idf);
+		}
+		
+		return tf.containsKey(word) ? tf.get(word) : minTfIdf;
 	}
 	
 	// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

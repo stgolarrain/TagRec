@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import common.Bookmark;
 import common.CalculationType;
 import common.Features;
 import processing.ActCalculator;
@@ -223,11 +224,11 @@ public class Pipeline {
 	private static void startContentBasedCalculator(String sampleDir, String sampleName) {
 		getTrainTestSize(sampleName);
 		BookmarkReader reader = new BookmarkReader(TRAIN_SIZE, false);
-		reader.readFile(sampleName);
-		ContentBasedCalculator contentBasedCalculator = new ContentBasedCalculator(reader, TRAIN_SIZE);
+		reader.readFile(sampleName);	
+		ContentBasedCalculator contentBasedCalculator = new ContentBasedCalculator(reader, TRAIN_SIZE, 526, .01);
 		contentBasedCalculator.train();
 		contentBasedCalculator.predictSample(sampleName, TRAIN_SIZE, TEST_SIZE);
-		writeMetrics(sampleDir, sampleName, "cb", 1, 10, null);
+		writeMetrics(sampleDir, sampleName, "cb", 1, 10, null);	
 	}
 	
 	private static void startActCalculator(String sampleDir, String sampleName,
